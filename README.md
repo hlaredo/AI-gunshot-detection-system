@@ -1,11 +1,27 @@
 # Raspberry Pi AI Gunshot Detection System
 
-This project consists of an AI-powered real-time audio detection system using YAMNet on Raspberry Pi, capable of:
+[![GitHub](https://img.shields.io/github/license/hlaredo/AI-gunshot-detection-system)](https://github.com/hlaredo/AI-gunshot-detection-system)
+[![GitHub stars](https://img.shields.io/github/stars/hlaredo/AI-gunshot-detection-system)](https://github.com/hlaredo/AI-gunshot-detection-system/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/hlaredo/AI-gunshot-detection-system)](https://github.com/hlaredo/AI-gunshot-detection-system/network)
+[![GitHub issues](https://img.shields.io/github/issues/hlaredo/AI-gunshot-detection-system)](https://github.com/hlaredo/AI-gunshot-detection-system/issues)
+
+An AI-powered real-time audio detection system using YAMNet on Raspberry Pi, capable of:
 
 - Detecting **suspicious sounds** (screaming, crying, gunshot, etc.) using Google's YAMNet model
 - Supporting **INMP441 24-bit I2S omnidirectional microphone** for high-quality audio capture
 - Activating a **warning LED** for 5 seconds when gunshot or suspicious sounds are detected
 - Logging events locally for traceability
+
+## 📋 Table of Contents
+
+- [How It Works](#how-it-works)
+- [Hardware Setup](#hardware-setup)
+- [Installation](#installation)
+- [Running the System](#running-the-system)
+- [Customization](#customization)
+- [Contributing](#contributing)
+- [License](#license)
+- [Credits](#credits)
 
 ---
 
@@ -61,7 +77,8 @@ AI-gunshot-detection-system/
 ├── media/
 │
 ├── requirements.txt
-├── .env                   # Environment variables (create this)
+├── .gitignore
+├── I2S_SETUP.md          # I2S microphone setup guide
 └── README.md
 ```
 ---
@@ -71,8 +88,8 @@ AI-gunshot-detection-system/
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/halahleis/AI-security-system.git
-cd AI-security-system
+git clone https://github.com/hlaredo/AI-gunshot-detection-system.git
+cd AI-gunshot-detection-system
 ```
 
 2. **Create and activate a virtual environment**
@@ -164,6 +181,38 @@ AUDIO_SAMPLE_RATE = 16000    # YAMNet requires 16kHz
 ```python
 LED_PIN = 18                 # GPIO pin for LED
 ```
+
+---
+
+## 📚 Additional Documentation
+
+- **[I2S Setup Guide](I2S_SETUP.md)** - Detailed instructions for setting up the INMP441 I2S microphone
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 🐛 Issues
+
+If you encounter any issues or have suggestions, please [open an issue](https://github.com/hlaredo/AI-gunshot-detection-system/issues) on GitHub.
+
+---
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
 
 ## Credits
 
