@@ -19,11 +19,7 @@ LED_PIN = 21  # Changed from GPIO 18 to avoid conflict with I2S SCK (BCLK) on GP
 
 # Detection Configuration
 SUSPICIOUS_KEYWORDS = [
-    "crying, sobbing",
-    "screaming",
-    "shout",
-    "gunshot",
-    "explosion"
+    "gunshot"
 ]
 
 DETECTION_THRESHOLD = 0.3  # Minimum confidence score to trigger alert
