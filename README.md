@@ -40,7 +40,7 @@ An AI-powered real-time audio detection system using YAMNet on Raspberry Pi, cap
 
 - Raspberry Pi (3B+, 4, or 5 recommended)
 - **INMP441 24-bit I2S Omnidirectional Microphone** (primary) or USB Microphone (fallback)
-- LED + 470 Ohm Resistor (on GPIO pin 18)
+- LED + 470 Ohm Resistor (on GPIO pin 21)
 - Breadboard + Wires
 
 ### INMP441 I2S Microphone Wiring
@@ -54,6 +54,10 @@ Connect the INMP441 to your Raspberry Pi:
 | WS (LRCL)   | GPIO 19 (Pin 35) | Word Select |
 | SCK (BCLK)  | GPIO 18 (Pin 12) | Bit Clock   |
 | SD          | GPIO 20 (Pin 38) | Serial Data |
+
+**Important GPIO Pin Assignments:**
+- **I2S Microphone:** GPIO 18 (SCK), GPIO 19 (WS), GPIO 20 (SD)
+- **LED Alert:** GPIO 21 (Pin 40) - *Changed from GPIO 18 to avoid conflict with I2S*
 
 **Note:** After wiring, you may need to configure the I2S interface in Raspberry Pi OS. The system will attempt to auto-detect the I2S device, or you can configure it manually in `config.py`.
 
@@ -179,7 +183,7 @@ AUDIO_SAMPLE_RATE = 16000    # YAMNet requires 16kHz
 
 ### Hardware Settings
 ```python
-LED_PIN = 18                 # GPIO pin for LED
+LED_PIN = 21                 # GPIO pin for LED (changed from 18 to avoid I2S conflict)
 ```
 
 ---

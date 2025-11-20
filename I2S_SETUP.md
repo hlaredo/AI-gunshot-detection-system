@@ -14,6 +14,8 @@ Connect the INMP441 to your Raspberry Pi as follows:
 | SCK (BCLK)  | Pin 12           | GPIO 18     | Bit Clock |
 | SD          | Pin 38           | GPIO 20     | Serial Data |
 
+**Important:** The LED alert uses **GPIO 21 (Pin 40)**, not GPIO 18, to avoid conflict with the I2S Bit Clock signal.
+
 **Important:** Make sure to use 3.3V for VDD, not 5V, as the INMP441 is a 3.3V device.
 
 ## Software Configuration
