@@ -5,12 +5,12 @@
 [![GitHub forks](https://img.shields.io/github/forks/hlaredo/AI-gunshot-detection-system)](https://github.com/hlaredo/AI-gunshot-detection-system/network)
 [![GitHub issues](https://img.shields.io/github/issues/hlaredo/AI-gunshot-detection-system)](https://github.com/hlaredo/AI-gunshot-detection-system/issues)
 
-An AI-powered real-time audio detection system using YAMNet on Raspberry Pi, capable of:
+An AI-powered real-time **gunshot detection system** using YAMNet on Raspberry Pi, capable of:
 
-- Detecting **suspicious sounds** (screaming, crying, gunshot, etc.) using Google's YAMNet model
+- Detecting **gunshot sounds** in real-time using Google's YAMNet model
 - Supporting **INMP441 24-bit I2S omnidirectional microphone** for high-quality audio capture
-- Activating a **warning LED** for 5 seconds when gunshot or suspicious sounds are detected
-- Logging events locally for traceability
+- Activating a **warning LED** for 5 seconds when gunshot is detected
+- Logging detection events locally for traceability
 
 ## 📋 Table of Contents
 
@@ -19,6 +19,8 @@ An AI-powered real-time audio detection system using YAMNet on Raspberry Pi, cap
 - [Installation](#installation)
 - [Running the System](#running-the-system)
 - [Customization](#customization)
+- [Documentation](#documentation)
+- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
 - [Credits](#credits)
@@ -29,10 +31,11 @@ An AI-powered real-time audio detection system using YAMNet on Raspberry Pi, cap
 
 | Component            | Description |
 |----------------------|-------------|
-| `audio_detect.py`    | Uses YAMNet for real-time sound classification via I2S/USB microphone |
-| `config.py`          | Configuration file for easy customization |
-| GPIO (LED)           | Alerts via LED when suspicious sounds detected |
-| Log Files            | Events are recorded locally for traceability |
+| `audio_detect.py`    | Main detection script using YAMNet for real-time gunshot classification |
+| `config.py`          | Configuration file for easy customization (detection threshold, GPIO pins, etc.) |
+| INMP441 I2S Mic      | High-quality 24-bit audio capture via I2S interface |
+| GPIO LED (Pin 21)    | Visual alert indicator (turns on for 5 seconds on detection) |
+| Log Files            | Detection events recorded with timestamps for analysis |
 
 ---
 
@@ -82,8 +85,10 @@ AI-gunshot-detection-system/
 │
 ├── requirements.txt
 ├── .gitignore
-├── I2S_SETUP.md          # I2S microphone setup guide
-└── README.md
+├── LICENSE
+├── README.md             # This file
+├── I2S_SETUP.md          # Detailed I2S microphone setup guide
+└── GPIO_PIN_ASSIGNMENTS.md # Complete GPIO pin mapping and conflict prevention
 ```
 ---
 
@@ -128,15 +133,13 @@ The system will:
 - Auto-detect and configure audio input (I2S or USB microphone)
 - Display available audio devices on startup
 - Plot real-time confidence of top 5 sound classes (if enabled)
-- Turn on LED for 5 seconds when suspicious sounds are detected
+- Turn on LED for 5 seconds when **gunshot** is detected
 - Log detections to `audio_detection_log.txt`
 
-**Supported Detection Classes:**
-- Crying, sobbing
-- Screaming
-- Shout
-- Gunshot
-- Explosion
+**Detection Target:**
+- **Gunshot** sounds (configurable threshold: 30% confidence by default)
+
+> **Note:** The system is currently configured to detect only gunshot sounds. You can modify `SUSPICIOUS_KEYWORDS` in `config.py` to detect additional sound classes if needed.
 
 ---
 
@@ -156,11 +159,7 @@ All configuration options are in `yamnet_audio_classification/config.py`:
 ### Detection Settings
 ```python
 SUSPICIOUS_KEYWORDS = [
-    "crying, sobbing",
-    "screaming",
-    "shout",
-    "gunshot",
-    "explosion"
+    "gunshot"
 ]
 
 DETECTION_THRESHOLD = 0.3  # Minimum confidence (0.0-1.0)
@@ -188,9 +187,39 @@ LED_PIN = 21                 # GPIO pin for LED (changed from 18 to avoid I2S co
 
 ---
 
-## 📚 Additional Documentation
+## 📚 Documentation
 
-- **[I2S Setup Guide](I2S_SETUP.md)** - Detailed instructions for setting up the INMP441 I2S microphone
+For detailed setup and configuration guides, see:
+
+- **[I2S Setup Guide](I2S_SETUP.md)** - Complete instructions for setting up the INMP441 I2S microphone, including hardware wiring, software configuration, and troubleshooting
+- **[GPIO Pin Assignments](GPIO_PIN_ASSIGNMENTS.md)** - Comprehensive GPIO pin mapping, conflict prevention, and wiring diagrams
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**LED not turning on:**
+- Verify LED is connected to GPIO 21 (Pin 40) with a 470Ω resistor
+- Check `config.py` to ensure `ENABLE_LED_ALERT = True`
+- Verify LED polarity (long leg to GPIO, short leg through resistor to GND)
+
+**No audio input detected:**
+- If using I2S: Follow the [I2S Setup Guide](I2S_SETUP.md) to verify I2S is enabled
+- Check audio device with: `arecord -l` or `aplay -l`
+- Try USB microphone fallback: Set `USE_I2S = False` in `config.py`
+
+**GPIO conflicts:**
+- Review [GPIO Pin Assignments](GPIO_PIN_ASSIGNMENTS.md) to ensure no pin conflicts
+- Never use GPIO 18, 19, or 20 for other purposes when using I2S
+
+**Detection not working:**
+- Verify `SUSPICIOUS_KEYWORDS` includes "gunshot" in `config.py`
+- Adjust `DETECTION_THRESHOLD` if getting too many false positives/negatives
+- Check log file `audio_detection_log.txt` for detection history
+
+For more detailed troubleshooting, see the [I2S Setup Guide](I2S_SETUP.md).
 
 ---
 

@@ -1,6 +1,10 @@
 # INMP441 I2S Microphone Setup Guide
 
-This guide will help you set up the INMP441 24-bit I2S omnidirectional microphone on your Raspberry Pi.
+This guide provides detailed instructions for setting up the INMP441 24-bit I2S omnidirectional microphone on your Raspberry Pi for the AI Gunshot Detection System.
+
+> **Related Documentation:**
+> - [Main README](README.md) - Project overview and quick start
+> - [GPIO Pin Assignments](GPIO_PIN_ASSIGNMENTS.md) - Complete pin mapping and conflict prevention
 
 ## Hardware Connections
 
@@ -31,16 +35,24 @@ sudo raspi-config
 Navigate to:
 - **Interface Options** → **I2S** → **Enable**
 
-Alternatively, you can enable I2S by adding this line to `/boot/config.txt`:
+Alternatively, you can enable I2S by editing the config file:
 
+**For Raspberry Pi OS (Bullseye and earlier):**
 ```bash
 sudo nano /boot/config.txt
 ```
 
-Add or uncomment:
+**For Raspberry Pi OS (Bookworm and later):**
+```bash
+sudo nano /boot/firmware/config.txt
+```
+
+Add or uncomment this line:
 ```
 dtparam=i2s=on
 ```
+
+> **Note:** The INMP441 does not require a device tree overlay. Simply enabling I2S is sufficient. The `dtoverlay=adau7002-simple` is for different microphone modules, not the INMP441.
 
 Reboot your Raspberry Pi:
 ```bash
@@ -79,21 +91,30 @@ aplay -l
 Test the microphone with:
 
 ```bash
-arecord -D hw:0,0 -f S16_LE -r 16000 -c 1 test.wav
+arecord -D hw:0,0 -f S16_LE -r 16000 -c 1 -d 5 test.wav
 ```
 
-Press Ctrl+C after a few seconds, then play it back:
+**Parameters explained:**
+- `-D hw:0,0` → I2S device (check `arecord -l` for your device number)
+- `-f S16_LE` → 16-bit samples (INMP441 supports 16-bit)
+- `-r 16000` → 16 kHz sample rate (required by YAMNet)
+- `-c 1` → Mono channel (INMP441 is mono)
+- `-d 5` → Record for 5 seconds
+
+After recording, play it back to verify:
 
 ```bash
 aplay test.wav
 ```
+
+> **Note:** If `hw:0,0` doesn't work, check your device number with `arecord -l` and use the appropriate `hw:X,Y` value.
 
 ### 5. Configure in the Project
 
 The audio detection system will auto-detect I2S devices. If you need to specify a particular device:
 
 1. Edit `yamnet_audio_classification/config.py`
-2. Set `I2S_DEVICE_NAME` to match your device name from `arecord -l`
+2. Set `I2S_DEVICE_NAME` to match your device name from `arecord -D`
 3. Or leave it as `None` for auto-detection
 
 Example:
@@ -107,10 +128,11 @@ I2S_DEVICE_NAME = "seeed-2mic-voicecard"  # If your device has this name
 
 If the I2S device is not detected:
 
-1. **Check wiring** - Ensure all connections are secure
-2. **Verify I2S is enabled** - Check `/boot/config.txt` has `dtparam=i2s=on`
-3. **Check device tree overlay** - Some setups require specific overlays in `/boot/config.txt`
-4. **Try USB fallback** - Set `USE_I2S = False` in `config.py` to use USB microphone
+1. **Check wiring** - Verify all connections match the [GPIO Pin Assignments](GPIO_PIN_ASSIGNMENTS.md)
+2. **Verify I2S is enabled** - Check `/boot/config.txt` (or `/boot/firmware/config.txt` on newer OS) has `dtparam=i2s=on`
+3. **Reboot required** - I2S changes require a reboot: `sudo reboot`
+4. **Check device list** - Run `arecord -l` to see all available audio devices
+5. **Try USB fallback** - Set `USE_I2S = False` in `config.py` to use USB microphone
 
 ### No Audio Input
 
@@ -120,18 +142,21 @@ If you get no audio:
    ```bash
    alsamixer
    ```
-   Press F6 to select your I2S device, then adjust volume
+   Press `F6` to select your I2S device, then adjust volume with arrow keys
 
 2. **Test with arecord:**
    ```bash
    arecord -D hw:0,0 -f S16_LE -r 16000 -c 1 -d 5 test.wav
    ```
+   Replace `hw:0,0` with your actual device from `arecord -l`
 
 3. **Check permissions:**
    ```bash
    sudo usermod -a -G audio $USER
    ```
-   Then log out and log back in
+   Then log out and log back in (or reboot)
+
+4. **Verify wiring** - Double-check all connections against the [GPIO Pin Assignments](GPIO_PIN_ASSIGNMENTS.md)
 
 ### Low Quality Audio
 
@@ -152,7 +177,25 @@ If you prefer to use a USB microphone instead:
 
 ## Additional Resources
 
+- [Main README](README.md) - Project overview and quick start guide
+- [GPIO Pin Assignments](GPIO_PIN_ASSIGNMENTS.md) - Complete pin mapping reference
 - [Raspberry Pi I2S Documentation](https://www.raspberrypi.org/documentation/configuration/audio-config.md)
 - [INMP441 Datasheet](https://www.invensense.com/products/digital/inmp441/)
 - [ALSA Documentation](https://www.alsa-project.org/wiki/Documentation)
+
+---
+
+## Quick Reference
+
+**I2S Pin Connections:**
+- VDD → 3.3V (Pin 1)
+- GND → GND (Pin 6)
+- WS (LRCL) → GPIO 19 (Pin 35)
+- SCK (BCLK) → GPIO 18 (Pin 12)
+- SD → GPIO 20 (Pin 38)
+
+**LED Connection:**
+- LED → GPIO 21 (Pin 40) with 470Ω resistor
+
+See [GPIO_PIN_ASSIGNMENTS.md](GPIO_PIN_ASSIGNMENTS.md) for complete wiring diagram.
 

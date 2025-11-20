@@ -1,6 +1,10 @@
 # GPIO Pin Assignments
 
-This document outlines all GPIO pin assignments for the AI Gunshot Detection System to prevent conflicts.
+This document outlines all GPIO pin assignments for the AI Gunshot Detection System to prevent conflicts and ensure proper hardware configuration.
+
+> **Related Documentation:**
+> - [Main README](README.md) - Project overview and quick start
+> - [I2S Setup Guide](I2S_SETUP.md) - Detailed I2S microphone setup instructions
 
 ## Pin Assignment Summary
 
