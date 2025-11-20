@@ -91,11 +91,11 @@ aplay -l
 Test the microphone with:
 
 ```bash
-arecord -D hw:0,0 -f S16_LE -r 16000 -c 1 -d 5 test.wav
+arecord -D hw:1,0 -f S16_LE -r 16000 -c 1 -d 5 test.wav
 ```
 
 **Parameters explained:**
-- `-D hw:0,0` → I2S device (check `arecord -l` for your device number)
+- `-D hw:1,0` → I2S device (check `arecord -l` for your device number)
 - `-f S16_LE` → 16-bit samples (INMP441 supports 16-bit)
 - `-r 16000` → 16 kHz sample rate (required by YAMNet)
 - `-c 1` → Mono channel (INMP441 is mono)
@@ -107,14 +107,14 @@ After recording, play it back to verify:
 aplay test.wav
 ```
 
-> **Note:** If `hw:0,0` doesn't work, check your device number with `arecord -l` and use the appropriate `hw:X,Y` value.
+> **Note:** If `hw:1,0` doesn't work, check your device number with `arecord -l` and use the appropriate `hw:X,Y` value.
 
 ### 5. Configure in the Project
 
 The audio detection system will auto-detect I2S devices. If you need to specify a particular device:
 
 1. Edit `yamnet_audio_classification/config.py`
-2. Set `I2S_DEVICE_NAME` to match your device name from `arecord -D`
+2. Set `I2S_DEVICE_NAME` to match your device name from `arecord -l`
 3. Or leave it as `None` for auto-detection
 
 Example:
@@ -129,7 +129,7 @@ I2S_DEVICE_NAME = "seeed-2mic-voicecard"  # If your device has this name
 If the I2S device is not detected:
 
 1. **Check wiring** - Verify all connections match the [GPIO Pin Assignments](GPIO_PIN_ASSIGNMENTS.md)
-2. **Verify I2S is enabled** - Check `/boot/config.txt` (or `/boot/firmware/config.txt` on newer OS) has `dtparam=i2s=on`
+2. **Verify I2S is enabled** - Check `/boot/config.txt` (or `/boot/firmware/config.txt` on newer OS) has `dtparam=i2s=on` 
 3. **Reboot required** - I2S changes require a reboot: `sudo reboot`
 4. **Check device list** - Run `arecord -l` to see all available audio devices
 5. **Try USB fallback** - Set `USE_I2S = False` in `config.py` to use USB microphone
@@ -146,9 +146,9 @@ If you get no audio:
 
 2. **Test with arecord:**
    ```bash
-   arecord -D hw:0,0 -f S16_LE -r 16000 -c 1 -d 5 test.wav
+   arecord -D hw:1,0 -f S16_LE -r 16000 -c 1 -d 5 test.wav
    ```
-   Replace `hw:0,0` with your actual device from `arecord -l`
+   Replace `hw:1,0` with your actual device from `arecord -l`
 
 3. **Check permissions:**
    ```bash
