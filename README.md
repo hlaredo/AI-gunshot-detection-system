@@ -164,21 +164,12 @@ Each log includes a timestamp and detected event.
 All configuration options are in `yamnet_audio_classification/config.py`:
 
 ### Detection Settings
-### Other sounds categories that are optional to adjust 
-SUSPICIOUS_KEYWORDS = [
-    "crying, sobbing",
-    "screaming",
-    "shout",
-    "gunshot",
-    "explosion"
-]
-
 ```python
 SUSPICIOUS_KEYWORDS = [
     "gunshot"
 ]
 
-DETECTION_THRESHOLD = 0.3  # Minimum confidence (0.0-1.0)
+DETECTION_THRESHOLD = 0.2  # Minimum confidence (0.0-1.0) - lowered for better sensitivity
 ```
 
 ### Alert Settings
