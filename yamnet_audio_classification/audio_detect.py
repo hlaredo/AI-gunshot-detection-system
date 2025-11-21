@@ -102,6 +102,7 @@ if config.USE_I2S and SOUNDDEVICE_AVAILABLE:
             # For now, we'll use blocking read instead
         
         print(f"Audio configured: {config.AUDIO_SAMPLE_RATE}Hz, {config.AUDIO_CHANNELS} channel(s)")
+        print(f"Note: I2S audio will be converted from stereo to mono for YAMNet processing")
         USE_SOUNDDEVICE = True
         
     except Exception as e:
@@ -129,6 +130,8 @@ if not USE_SOUNDDEVICE:
             frames_per_buffer=config.AUDIO_CHUNK_SIZE
         )
         print(f"Audio configured: {config.AUDIO_SAMPLE_RATE}Hz, {config.AUDIO_CHANNELS} channel(s)")
+        if config.AUDIO_CHANNELS == 2:
+            print(f"Note: USB audio will be converted from stereo to mono for YAMNet processing")
     except Exception as e:
         print(f"Error setting up PyAudio: {e}")
         sys.exit(1)
@@ -191,11 +194,27 @@ try:
                 device=device_id
             )
             sd.wait()  # Wait until recording is finished
-            waveform = audio_data.flatten().astype(np.float32) / 32768.0
+            
+            # Convert stereo to mono for YAMNet (YAMNet expects mono input)
+            if config.AUDIO_CHANNELS == 2:
+                # Take the mean of both channels to convert stereo to mono
+                waveform = np.mean(audio_data, axis=1).astype(np.float32) / 32768.0
+            else:
+                # Already mono
+                waveform = audio_data.flatten().astype(np.float32) / 32768.0
         else:
             # Read audio using PyAudio (USB)
             data = audio_stream.read(config.AUDIO_CHUNK_SIZE, exception_on_overflow=False)
-            waveform = np.frombuffer(data, dtype=np.int16).astype(np.float32) / 32768.0
+            audio_array = np.frombuffer(data, dtype=np.int16)
+            
+            # Handle stereo to mono conversion for USB microphones too
+            if config.AUDIO_CHANNELS == 2:
+                # Reshape and convert stereo to mono
+                audio_array = audio_array.reshape(-1, 2)
+                waveform = np.mean(audio_array, axis=1).astype(np.float32) / 32768.0
+            else:
+                # Already mono
+                waveform = audio_array.astype(np.float32) / 32768.0
         
         # Run inference
         try:
@@ -209,6 +228,23 @@ try:
         top5_idx = np.argsort(mean_scores)[-5:][::-1]
         top5_scores = mean_scores[top5_idx]
         top5_labels = [class_names[i] for i in top5_idx]
+        
+        # Debug output: Print top predictions every few iterations
+        import time
+        if not hasattr(log_event, 'last_debug_time'):
+            log_event.last_debug_time = 0
+        
+        current_time = time.time()
+        if current_time - log_event.last_debug_time > 2:  # Print debug every 2 seconds
+            print(f"\n--- Debug Output ---")
+            print(f"Audio input shape: {waveform.shape}, Max amplitude: {np.max(np.abs(waveform)):.3f}")
+            print(f"Top 5 predictions:")
+            for i, (label, score) in enumerate(zip(top5_labels, top5_scores)):
+                marker = "🎯" if any(keyword in label.lower() for keyword in config.SUSPICIOUS_KEYWORDS) else "  "
+                print(f"  {marker} {i+1}. {label}: {score:.3f} ({score:.1%})")
+            print(f"Detection threshold: {config.DETECTION_THRESHOLD} ({config.DETECTION_THRESHOLD:.1%})")
+            print("-" * 40)
+            log_event.last_debug_time = current_time
 
         # Update Plot
         if config.ENABLE_PLOT:

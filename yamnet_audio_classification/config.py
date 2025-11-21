@@ -6,7 +6,7 @@ import os
 # Audio Configuration
 AUDIO_SAMPLE_RATE = 16000  # YAMNet requires 16kHz
 AUDIO_CHUNK_SIZE = 16000   # 1 second of audio at 16kHz
-AUDIO_CHANNELS = 1         # Mono audio
+AUDIO_CHANNELS = 2         # Stereo audio (I2S device requires 2 channels, converted to mono for YAMNet)
 AUDIO_FORMAT = 'int16'     # 16-bit audio
 
 # I2S Microphone Configuration (INMP441)
@@ -22,7 +22,7 @@ SUSPICIOUS_KEYWORDS = [
     "gunshot"
 ]
 
-DETECTION_THRESHOLD = 0.3  # Minimum confidence score to trigger alert
+DETECTION_THRESHOLD = 0.2  # Minimum confidence score to trigger alert (lowered for better sensitivity)
 
 # Alert Configuration
 ENABLE_LED_ALERT = True
