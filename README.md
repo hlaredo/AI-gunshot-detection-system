@@ -93,6 +93,13 @@ AI-gunshot-detection-system/
 ---
 
 ## Installation
+## Install Git
+```bash
+sudo apt install git -y
+git --version
+```
+You should see something like:
+git version 2.xx.x
 
 1. **Clone the repository**
 
@@ -157,6 +164,15 @@ Each log includes a timestamp and detected event.
 All configuration options are in `yamnet_audio_classification/config.py`:
 
 ### Detection Settings
+### Other sounds categories that are optional to adjust 
+SUSPICIOUS_KEYWORDS = [
+    "crying, sobbing",
+    "screaming",
+    "shout",
+    "gunshot",
+    "explosion"
+]
+
 ```python
 SUSPICIOUS_KEYWORDS = [
     "gunshot"
@@ -178,6 +194,7 @@ ENABLE_PLOT = True           # Enable/disable real-time plotting
 USE_I2S = True               # Use I2S microphone (INMP441) or USB
 I2S_DEVICE_NAME = None       # Auto-detect or specify device name
 AUDIO_SAMPLE_RATE = 16000    # YAMNet requires 16kHz
+AUDIO_CHANNELS = 2           # Stereo input (I2S requirement), converted to mono for YAMNet
 ```
 
 ### Hardware Settings
@@ -216,7 +233,9 @@ For detailed setup and configuration guides, see:
 
 **Detection not working:**
 - Verify `SUSPICIOUS_KEYWORDS` includes "gunshot" in `config.py`
-- Adjust `DETECTION_THRESHOLD` if getting too many false positives/negatives
+- Check if audio input is working: `arecord -D hw:1,0 -f S16_LE -r 16000 -c 2 -d 5 test.wav`
+- Adjust `DETECTION_THRESHOLD` (default 0.2) if getting too many false positives/negatives
+- Look for debug output showing real-time predictions every 2 seconds
 - Check log file `audio_detection_log.txt` for detection history
 
 For more detailed troubleshooting, see the [I2S Setup Guide](I2S_SETUP.md).

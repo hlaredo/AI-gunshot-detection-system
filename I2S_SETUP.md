@@ -91,14 +91,14 @@ aplay -l
 Test the microphone with:
 
 ```bash
-arecord -D hw:1,0 -f S16_LE -r 16000 -c 1 -d 5 test.wav
+arecord -D hw:1,0 -f S16_LE -r 16000 -c 2 -d 5 test.wav
 ```
 
 **Parameters explained:**
 - `-D hw:1,0` → I2S device (check `arecord -l` for your device number)
 - `-f S16_LE` → 16-bit samples (INMP441 supports 16-bit)
 - `-r 16000` → 16 kHz sample rate (required by YAMNet)
-- `-c 1` → Mono channel (INMP441 is mono)
+- `-c 2` → Stereo channels (I2S device requires 2 channels, converted to mono by software)
 - `-d 5` → Record for 5 seconds
 
 After recording, play it back to verify:
@@ -106,6 +106,8 @@ After recording, play it back to verify:
 ```bash
 aplay test.wav
 ```
+
+> **Important:** The I2S device requires **2 channels (stereo)** for recording, even though the INMP441 is a mono microphone. The detection software automatically converts stereo to mono for YAMNet processing.
 
 > **Note:** If `hw:1,0` doesn't work, check your device number with `arecord -l` and use the appropriate `hw:X,Y` value.
 
@@ -146,9 +148,11 @@ If you get no audio:
 
 2. **Test with arecord:**
    ```bash
-   arecord -D hw:1,0 -f S16_LE -r 16000 -c 1 -d 5 test.wav
+   arecord -D hw:1,0 -f S16_LE -r 16000 -c 2 -d 5 test.wav
    ```
    Replace `hw:1,0` with your actual device from `arecord -l`
+   
+   > **Note:** Use `-c 2` (stereo) as the I2S device requires 2 channels
 
 3. **Check permissions:**
    ```bash
@@ -196,6 +200,12 @@ If you prefer to use a USB microphone instead:
 
 **LED Connection:**
 - LED → GPIO 21 (Pin 40) with 470Ω resistor
+
+**Audio Configuration:**
+- I2S device requires **2 channels (stereo)** input
+- Detection software converts stereo to mono for YAMNet
+- Sample rate: 16kHz (required by YAMNet)
+- Detection threshold: 0.2 (20% confidence)
 
 See [GPIO_PIN_ASSIGNMENTS.md](GPIO_PIN_ASSIGNMENTS.md) for complete wiring diagram.
 
