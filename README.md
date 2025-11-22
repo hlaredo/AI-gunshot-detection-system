@@ -166,7 +166,11 @@ All configuration options are in `yamnet_audio_classification/config.py`:
 ### Detection Settings
 ```python
 SUSPICIOUS_KEYWORDS = [
-    "gunshot"
+    "Gunshot, gunfire",
+    "Explosion",
+    "Fireworks", 
+    "Machine gun",
+    "Firecracker"
 ]
 
 DETECTION_THRESHOLD = 0.2  # Minimum confidence (0.0-1.0) - lowered for better sensitivity
@@ -223,7 +227,7 @@ For detailed setup and configuration guides, see:
 - Never use GPIO 18, 19, or 20 for other purposes when using I2S
 
 **Detection not working:**
-- Verify `SUSPICIOUS_KEYWORDS` includes "gunshot" in `config.py`
+- Verify `SUSPICIOUS_KEYWORDS` includes gunshot-related terms in `config.py`
 - Check if audio input is working: `arecord -D hw:1,0 -f S16_LE -r 16000 -c 2 -d 5 test.wav`
 - Adjust `DETECTION_THRESHOLD` (default 0.2) if getting too many false positives/negatives
 - Look for debug output showing real-time predictions every 2 seconds
