@@ -175,6 +175,43 @@ def log_event(event_type, confidence):
 # LED Control
 led_timer = None
 
+# Cleanup Function
+def cleanup():
+    """Clean up resources and GPIO before exiting"""
+    print("Cleaning up...")
+    try:
+        GPIO.output(config.LED_PIN, GPIO.LOW)
+        GPIO.cleanup()
+    except:
+        pass
+    
+    try:
+        if 'audio_stream' in globals() and audio_stream:
+            audio_stream.stop_stream()
+            audio_stream.close()
+    except:
+        pass
+    
+    try:
+        if 'p' in globals() and p:
+            p.terminate()
+    except:
+        pass
+    
+    try:
+        if config.ENABLE_PLOT:
+            plt.close()
+    except:
+        pass
+    
+    try:
+        if config.ENABLE_SOUND_ALERT:
+            pygame.mixer.quit()
+    except:
+        pass
+    
+    print("Cleanup complete. Goodbye!")
+
 # Detection Loop
 print("\n" + "="*60)
 print("Starting audio detection...")
@@ -318,6 +355,39 @@ try:
             
             # Print detection info
             print(f"⚠ ALERT: {detected_type} detected (confidence: {detected_confidence:.2%})")
+            
+            # Pause detection and show user menu
+            print("\n" + "="*60)
+            print("🚨 DETECTION TRIGGERED - SYSTEM PAUSED")
+            print("="*60)
+            
+            while True:
+                print("\nChoose an option:")
+                print("1. Continue monitoring")
+                print("2. Exit program")
+                
+                try:
+                    choice = input("\nEnter your choice (1 or 2): ").strip()
+                    
+                    if choice == "1":
+                        print("\n" + "="*60)
+                        print("🔄 Resuming audio detection...")
+                        print("Press Ctrl+C to stop.")
+                        print("="*60)
+                        break
+                    elif choice == "2":
+                        print("\n👋 Exiting program...")
+                        cleanup()
+                        sys.exit(0)
+                    else:
+                        print("❌ Invalid choice. Please enter 1 or 2.")
+                        
+                except KeyboardInterrupt:
+                    print("\n\n👋 Exiting program...")
+                    cleanup()
+                    sys.exit(0)
+                except Exception as e:
+                    print(f"❌ Input error: {e}. Please try again.")
         else:
             # Turn off sound alert if no detection
             if config.ENABLE_SOUND_ALERT and alarm_playing:
@@ -336,22 +406,4 @@ except Exception as e:
     traceback.print_exc()
 
 finally:
-    # Cleanup
-    print("Cleaning up...")
-    GPIO.output(config.LED_PIN, GPIO.LOW)
-    GPIO.cleanup()
-    
-    if audio_stream:
-        audio_stream.stop_stream()
-        audio_stream.close()
-    
-    if p:
-        p.terminate()
-    
-    if config.ENABLE_PLOT:
-        plt.close()
-    
-    if config.ENABLE_SOUND_ALERT:
-        pygame.mixer.quit()
-    
-    print("Cleanup complete. Goodbye!")
+    cleanup()
