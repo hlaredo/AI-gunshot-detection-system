@@ -234,7 +234,7 @@ try:
         print(f"Audio input shape: {waveform.shape}, Max amplitude: {np.max(np.abs(waveform)):.3f}")
         print(f"Top 5 predictions:")
         for i, (label, score) in enumerate(zip(top5_labels, top5_scores)):
-            marker = "🎯" if any(keyword in label.lower() for keyword in config.SUSPICIOUS_KEYWORDS) else "  "
+            marker = "🎯" if any(keyword.lower() in label.lower() for keyword in config.SUSPICIOUS_KEYWORDS) else "  "
             print(f"  {marker} {i+1}. {label}: {score:.3f} ({score:.1%})")
         print(f"Detection threshold: {config.DETECTION_THRESHOLD} ({config.DETECTION_THRESHOLD:.1%})")
         
@@ -242,7 +242,7 @@ try:
         detection_found = False
         for label, score in zip(top5_labels, top5_scores):
             for keyword in config.SUSPICIOUS_KEYWORDS:
-                if keyword in label.lower() and score > config.DETECTION_THRESHOLD:
+                if keyword.lower() in label.lower() and score > config.DETECTION_THRESHOLD:
                     detection_found = True
                     print(f"🚨 DETECTION FOUND! {label} - {score:.1%} confidence (keyword: {keyword})")
                     break
@@ -278,7 +278,7 @@ try:
         for label, score in zip(top5_labels, top5_scores):
             print(f"DEBUG: Checking '{label}' with score {score:.3f}")
             for keyword in config.SUSPICIOUS_KEYWORDS:
-                if keyword in label.lower():
+                if keyword.lower() in label.lower():
                     print(f"DEBUG: Found keyword '{keyword}' in '{label}'")
                     if score > config.DETECTION_THRESHOLD:
                         print(f"DEBUG: Score {score:.3f} > threshold {config.DETECTION_THRESHOLD} - DETECTION!")
