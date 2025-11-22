@@ -229,22 +229,30 @@ try:
         top5_scores = mean_scores[top5_idx]
         top5_labels = [class_names[i] for i in top5_idx]
         
-        # Debug output: Print top predictions every few iterations
-        import time
-        if not hasattr(log_event, 'last_debug_time'):
-            log_event.last_debug_time = 0
+        # Debug output: Print top predictions
+        print(f"\n--- Audio Detection Debug ---")
+        print(f"Audio input shape: {waveform.shape}, Max amplitude: {np.max(np.abs(waveform)):.3f}")
+        print(f"Top 5 predictions:")
+        for i, (label, score) in enumerate(zip(top5_labels, top5_scores)):
+            marker = "🎯" if any(keyword in label.lower() for keyword in config.SUSPICIOUS_KEYWORDS) else "  "
+            print(f"  {marker} {i+1}. {label}: {score:.3f} ({score:.1%})")
+        print(f"Detection threshold: {config.DETECTION_THRESHOLD} ({config.DETECTION_THRESHOLD:.1%})")
         
-        current_time = time.time()
-        if current_time - log_event.last_debug_time > 2:  # Print debug every 2 seconds
-            print(f"\n--- Debug Output ---")
-            print(f"Audio input shape: {waveform.shape}, Max amplitude: {np.max(np.abs(waveform)):.3f}")
-            print(f"Top 5 predictions:")
-            for i, (label, score) in enumerate(zip(top5_labels, top5_scores)):
-                marker = "🎯" if any(keyword in label.lower() for keyword in config.SUSPICIOUS_KEYWORDS) else "  "
-                print(f"  {marker} {i+1}. {label}: {score:.3f} ({score:.1%})")
-            print(f"Detection threshold: {config.DETECTION_THRESHOLD} ({config.DETECTION_THRESHOLD:.1%})")
-            print("-" * 40)
-            log_event.last_debug_time = current_time
+        # Check for detection in debug output
+        detection_found = False
+        for label, score in zip(top5_labels, top5_scores):
+            for keyword in config.SUSPICIOUS_KEYWORDS:
+                if keyword in label.lower() and score > config.DETECTION_THRESHOLD:
+                    detection_found = True
+                    print(f"🚨 DETECTION FOUND! {label} - {score:.1%} confidence (keyword: {keyword})")
+                    break
+            if detection_found:
+                break
+        
+        if not detection_found:
+            print("   No target sounds detected in this sample")
+        
+        print("-" * 50)
 
         # Update Plot
         if config.ENABLE_PLOT:
@@ -263,14 +271,26 @@ try:
         detected_type = None
         detected_confidence = 0.0
 
+        # Debug: Print what we're checking
+        print(f"DEBUG: Checking keywords: {config.SUSPICIOUS_KEYWORDS}")
+        print(f"DEBUG: Threshold: {config.DETECTION_THRESHOLD}")
+        
         for label, score in zip(top5_labels, top5_scores):
+            print(f"DEBUG: Checking '{label}' with score {score:.3f}")
             for keyword in config.SUSPICIOUS_KEYWORDS:
-                if keyword in label.lower() and score > config.DETECTION_THRESHOLD:
-                    detected_something = True
-                    if score > detected_confidence:
-                        detected_type = label
-                        detected_confidence = score
-                    break
+                if keyword in label.lower():
+                    print(f"DEBUG: Found keyword '{keyword}' in '{label}'")
+                    if score > config.DETECTION_THRESHOLD:
+                        print(f"DEBUG: Score {score:.3f} > threshold {config.DETECTION_THRESHOLD} - DETECTION!")
+                        detected_something = True
+                        if score > detected_confidence:
+                            detected_type = label
+                            detected_confidence = score
+                        break
+                    else:
+                        print(f"DEBUG: Score {score:.3f} <= threshold {config.DETECTION_THRESHOLD} - no detection")
+            if detected_something:
+                break
 
         # Trigger alerts
         if detected_something:
