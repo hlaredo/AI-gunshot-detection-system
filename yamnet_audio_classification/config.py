@@ -17,12 +17,13 @@ USE_I2S = True  # Set to False to use USB microphone via PyAudio
 # GPIO Configuration
 LED_PIN = 21  # Changed from GPIO 18 to avoid conflict with I2S SCK (BCLK) on GPIO 18
 
-# Detection Configuration (Fireworks, Explosion, Gunshot, Firecracker, etc.)
+# Detection Configuration
 SUSPICIOUS_KEYWORDS = [
-    "gunshot",
-    "fireworks",
-    "explosion",
-    "firecracker"
+    "Gunshot, gunfire",
+    "Explosion",
+    "Fireworks",
+    "Machine gun",
+    "Firecracker"
 ]
 
 DETECTION_THRESHOLD = 0.2  # Minimum confidence score to trigger alert (lowered for better sensitivity)
