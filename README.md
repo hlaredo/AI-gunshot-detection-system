@@ -34,7 +34,7 @@ An AI-powered real-time **gunshot detection system** using YAMNet on Raspberry P
 | `audio_detect.py`    | Main detection script using YAMNet for real-time gunshot classification |
 | `config.py`          | Configuration file for easy customization (detection threshold, GPIO pins, etc.) |
 | INMP441 I2S Mic      | High-quality 24-bit audio capture via I2S interface |
-| GPIO LED (Pin 21)    | Visual alert indicator (turns on for 5 seconds on detection) |
+| GPIO LED (Pin 26)    | Visual alert indicator (turns on for 5 seconds on detection) |
 | Log Files            | Detection events recorded with timestamps for analysis |
 
 ---
@@ -43,7 +43,7 @@ An AI-powered real-time **gunshot detection system** using YAMNet on Raspberry P
 
 - Raspberry Pi (3B+, 4, or 5 recommended)
 - **INMP441 24-bit I2S Omnidirectional Microphone** (primary) or USB Microphone (fallback)
-- LED + 470 Ohm Resistor (on GPIO pin 21)
+- LED + 470 Ohm Resistor (on GPIO pin 26)
 - Breadboard + Wires
 
 ### INMP441 I2S Microphone Wiring
@@ -60,7 +60,7 @@ Connect the INMP441 to your Raspberry Pi:
 
 **Important GPIO Pin Assignments:**
 - **I2S Microphone:** GPIO 18 (SCK), GPIO 19 (WS), GPIO 20 (SD)
-- **LED Alert:** GPIO 21 (Pin 40) - *Changed from GPIO 18 to avoid conflict with I2S*
+- **LED Alert:** GPIO 26 (Pin 37) - *Changed from GPIO 21 to GPIO 26*
 
 **Note:** After wiring, you may need to configure the I2S interface in Raspberry Pi OS. The system will attempt to auto-detect the I2S device, or you can configure it manually in `config.py`.
 
@@ -194,7 +194,7 @@ AUDIO_CHANNELS = 2           # Stereo input (I2S requirement), converted to mono
 
 ### Hardware Settings
 ```python
-LED_PIN = 21                 # GPIO pin for LED (changed from 18 to avoid I2S conflict)
+LED_PIN = 26                 # GPIO pin for LED (GPIO 26, Pin 37)
 ```
 
 ---
@@ -213,7 +213,7 @@ For detailed setup and configuration guides, see:
 ### Common Issues
 
 **LED not turning on:**
-- Verify LED is connected to GPIO 21 (Pin 40) with a 470Ω resistor
+- Verify LED is connected to GPIO 26 (Pin 37) with a 470Ω resistor
 - Check `config.py` to ensure `ENABLE_LED_ALERT = True`
 - Verify LED polarity (long leg to GPIO, short leg through resistor to GND)
 

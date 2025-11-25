@@ -15,13 +15,14 @@ This document outlines all GPIO pin assignments for the AI Gunshot Detection Sys
 | WS (LRCL) | GPIO 19 | Pin 35 | Word Select | Left/Right clock |
 | SD | GPIO 20 | Pin 38 | Serial Data | Audio data |
 | **LED Alert** |
-| LED | GPIO 21 | Pin 40 | Output | Alert indicator |
+| LED | GPIO 26 | Pin 37 | Output | Alert indicator |
 
 ## Important Notes
 
 ### ✅ Conflict Resolution
 - **Original Issue:** LED was configured on GPIO 18, which conflicts with I2S SCK (BCLK)
-- **Solution:** LED moved to GPIO 21 to avoid conflict
+- **Previous Solution:** LED moved to GPIO 21 to avoid conflict
+- **Current Configuration:** LED now on GPIO 26 (Pin 37)
 - **Status:** ✅ **RESOLVED** - No GPIO conflicts
 
 ### I2S Pin Requirements
@@ -31,9 +32,9 @@ The I2S interface requires these specific GPIO pins:
 - **GPIO 20** - Serial Data (SD) - **DO NOT USE FOR OTHER PURPOSES**
 
 ### LED Pin
-- **GPIO 21** - LED output (with 470Ω resistor)
+- **GPIO 26** - LED output (with 470Ω resistor) on Pin 37
 - Can be changed in `yamnet_audio_classification/config.py` if needed
-- Alternative pins: GPIO 22, 23, 24, 25 (if GPIO 21 is unavailable)
+- Alternative pins: GPIO 22, 23, 24, 25 (if GPIO 26 is unavailable)
 
 ## Wiring Diagram
 
@@ -59,18 +60,20 @@ Raspberry Pi GPIO Header:
   GPIO13 [33] [34]  GND
   GPIO19 [35] [36]  GPIO16  ← INMP441 WS (LRCL) ⚠️ I2S ONLY
   GPIO26 [37] [38]  GPIO20  ← INMP441 SD ⚠️ I2S ONLY
-     GND [39] [40]  GPIO21  ← LED Alert ✅
+     ↑
+  LED Alert ✅
+     GND [39] [40]  GPIO21
 ```
 
 ## Code Configuration
 
 The GPIO pin assignments are configured in:
-- **LED Pin:** `yamnet_audio_classification/config.py` → `LED_PIN = 21`
+- **LED Pin:** `yamnet_audio_classification/config.py` → `LED_PIN = 26`
 - **I2S Pins:** Hardware-defined (cannot be changed in software)
 
 ## Verification Checklist
 
-- [x] LED configured on GPIO 21 (not GPIO 18)
+- [x] LED configured on GPIO 26 (Pin 37, not GPIO 18)
 - [x] I2S SCK on GPIO 18 (hardware requirement)
 - [x] I2S WS on GPIO 19 (hardware requirement)
 - [x] I2S SD on GPIO 20 (hardware requirement)
@@ -82,7 +85,7 @@ The GPIO pin assignments are configured in:
 If you experience issues:
 
 1. **LED not working:**
-   - Verify LED is connected to GPIO 21 (Pin 40)
+   - Verify LED is connected to GPIO 26 (Pin 37)
    - Check 470Ω resistor is in series
    - Verify LED polarity (long leg to GPIO, short leg through resistor to GND)
 

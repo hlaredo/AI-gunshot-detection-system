@@ -15,7 +15,7 @@ I2S_DEVICE_NAME = None  # e.g., "seeed-2mic-voicecard" or None for auto-detect
 USE_I2S = True  # Set to False to use USB microphone via PyAudio
 
 # GPIO Configuration
-LED_PIN = 21  # Changed from GPIO 18 to avoid conflict with I2S SCK (BCLK) on GPIO 18
+LED_PIN = 26  # GPIO 26 (Pin 37) - Changed from GPIO 21 to GPIO 26
 
 # Detection Configuration
 SUSPICIOUS_KEYWORDS = [
