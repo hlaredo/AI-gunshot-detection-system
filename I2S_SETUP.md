@@ -209,3 +209,29 @@ If you prefer to use a USB microphone instead:
 
 See [GPIO_PIN_ASSIGNMENTS.md](GPIO_PIN_ASSIGNMENTS.md) for complete wiring diagram.
 
+---
+
+## Audio Output (WM8960 Audio HAT)
+
+This system uses a **WM8960 Audio HAT** for audio output to play alarm sounds when gunshot detection occurs. The WM8960 Audio HAT connects to the Raspberry Pi GPIO header and provides a low-power speaker output.
+
+**Installation:**
+
+1. Insert the WM8960 Audio HAT onto the Raspberry Pi GPIO header
+2. Connect your external speaker to the WM8960 Audio HAT
+3. Install the driver:
+   ```bash
+   git clone https://github.com/waveshare/WM8960-Audio-HAT
+   cd WM8960-Audio-HAT
+   sudo ./install.sh
+   sudo reboot
+   ```
+
+4. After rebooting, verify installation:
+   ```bash
+   sudo dkms status
+   ```
+
+**Note:** The alarm sound will automatically play through the WM8960 Audio HAT when `ENABLE_SOUND_ALERT = True` in `config.py`. The WM8960 Audio HAT does not conflict with the INMP441 I2S microphone as they use different I2S channels.
+
+---

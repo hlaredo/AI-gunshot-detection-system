@@ -43,6 +43,7 @@ An AI-powered real-time **gunshot detection system** using YAMNet on Raspberry P
 
 - Raspberry Pi (3B+, 4, or 5 recommended)
 - **INMP441 24-bit I2S Omnidirectional Microphone** (primary) or USB Microphone (fallback)
+- **WM8960 Audio HAT** (for external speaker output - plays alarm.wav sound)
 - LED + 470 Ohm Resistor (on GPIO pin 26)
 - Breadboard + Wires
 
@@ -63,6 +64,51 @@ Connect the INMP441 to your Raspberry Pi:
 - **LED Alert:** GPIO 26 (Pin 37) - *Changed from GPIO 21 to GPIO 26*
 
 **Note:** After wiring, you may need to configure the I2S interface in Raspberry Pi OS. The system will attempt to auto-detect the I2S device, or you can configure it manually in `config.py`.
+
+### WM8960 Audio HAT Setup (Speaker Output)
+
+The WM8960 Audio HAT is used to connect an external low-power speaker for playing alarm sounds when gunshot detection occurs.
+
+**Physical Setup:**
+1. Insert the WM8960 Audio HAT onto the Raspberry Pi GPIO header
+2. Connect your external speaker to the WM8960 Audio HAT
+3. Power on the Raspberry Pi and ensure networking is enabled
+
+**Driver Installation:**
+
+The WM8960 Audio HAT requires a driver to be installed. Follow these steps:
+
+```bash
+# Clone the driver repository
+git clone https://github.com/waveshare/WM8960-Audio-HAT
+
+# Navigate to the driver directory
+cd WM8960-Audio-HAT
+
+# Install the driver (requires sudo)
+sudo ./install.sh
+
+# Reboot the Raspberry Pi
+sudo reboot
+```
+
+**Verify Installation:**
+
+After rebooting, verify the driver is installed correctly:
+
+```bash
+sudo dkms status
+```
+
+You should see output similar to:
+```
+wm8960-soundcard, 1.0, 4.14.71+, armv6l: installed
+wm8960-soundcard, 1.0, 4.14.71-v7+, armv6l: installed
+```
+
+This confirms the WM8960 Audio HAT driver is successfully installed and ready to use.
+
+**Note:** The alarm sound (`alarm.WAV`) will automatically play through the WM8960 Audio HAT when gunshot detection occurs (if `ENABLE_SOUND_ALERT = True` in `config.py`).
 
 ---
 
@@ -119,7 +165,21 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. **Configure I2S Audio (if using INMP441)**
+4. **Install WM8960 Audio HAT Driver (if using external speaker)**
+   
+   If you're using the WM8960 Audio HAT for speaker output, install the driver:
+   ```bash
+   git clone https://github.com/waveshare/WM8960-Audio-HAT
+   cd WM8960-Audio-HAT
+   sudo ./install.sh
+   sudo reboot
+   ```
+   
+   After rebooting, verify with: `sudo dkms status`
+   
+   See the [Hardware Setup](#hardware-setup) section above for detailed instructions.
+
+5. **Configure I2S Audio (if using INMP441)**
    
    The system will attempt to auto-detect I2S devices. If you need to manually configure:
    - Edit `yamnet_audio_classification/config.py`
