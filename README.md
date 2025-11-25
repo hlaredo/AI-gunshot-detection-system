@@ -14,6 +14,7 @@ An AI-powered real-time **gunshot detection system** using YAMNet on Raspberry P
 
 ## 📋 Table of Contents
 
+- [About YAMNet and AudioSet](#about-yamnet-and-audioset)
 - [How It Works](#how-it-works)
 - [Hardware Setup](#hardware-setup)
 - [Installation](#installation)
@@ -24,6 +25,20 @@ An AI-powered real-time **gunshot detection system** using YAMNet on Raspberry P
 - [Contributing](#contributing)
 - [License](#license)
 - [Credits](#credits)
+
+---
+
+## About YAMNet and AudioSet
+
+This project leverages **YAMNet** (Yet Another Mobile Network), a deep learning model from Google's **TensorFlow Model Garden**, which was trained on the **AudioSet** dataset. Understanding these components helps clarify how the detection system works:
+
+- **AudioSet** is a large-scale audio ontology dataset created by Google, containing over 2 million labeled 10-second audio clips from YouTube videos, organized into 632 hierarchical sound event classes. It serves as the training foundation for audio classification models, providing a comprehensive taxonomy of real-world sounds including gunshots, explosions, music, speech, and environmental sounds.
+
+- **YAMNet** is a pre-trained deep neural network model that was trained on the AudioSet dataset. It can classify audio into 521 of the AudioSet sound classes with high accuracy. YAMNet is optimized for mobile and edge devices, making it ideal for Raspberry Pi deployment. The model takes 16kHz mono audio as input and outputs predictions for multiple sound classes simultaneously.
+
+- **TensorFlow Model Garden** is a collection of state-of-the-art machine learning models, implementations, and tools maintained by the TensorFlow team. YAMNet is part of this collection, providing a standardized, well-tested implementation that can be easily integrated into applications. The Model Garden ensures consistent APIs, documentation, and best practices across different models.
+
+**In this project:** We use YAMNet (from TensorFlow Model Garden) to analyze real-time audio captured by the INMP441 microphone. The model compares incoming audio against the 521 sound classes it learned from AudioSet, allowing us to detect gunshot-related sounds (such as "Gunshot, gunfire", "Explosion", "Fireworks", "Machine gun", and "Firecracker") with configurable confidence thresholds.
 
 ---
 
