@@ -219,6 +219,53 @@ Each log includes a timestamp and detected event.
 
 ---
 
+## Keeping the Codebase Updated
+
+To keep your Raspberry Pi codebase synchronized with the latest changes from GitHub, follow these steps:
+
+### Pull the Latest Changes
+
+Navigate to the project directory and pull the latest updates:
+
+```bash
+cd ~/AI-gunshot-detection-system
+git pull origin main
+```
+
+This will download and merge any new changes, bug fixes, or improvements that have been pushed to the repository.
+
+### After Updating
+
+After pulling the latest changes:
+
+1. **If dependencies were updated**, reinstall requirements:
+   ```bash
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. **If configuration files changed**, review `yamnet_audio_classification/config.py` to see if any new settings were added or defaults changed.
+
+3. **Restart the detection system** to use the updated code:
+   ```bash
+   cd yamnet_audio_classification
+   python audio_detect.py
+   ```
+
+### Checking for Updates
+
+You can check if there are updates available without pulling them:
+
+```bash
+cd ~/AI-gunshot-detection-system
+git fetch origin
+git status
+```
+
+This will show you if your local branch is behind the remote repository.
+
+---
+
 ## Customization
 
 All configuration options are in `yamnet_audio_classification/config.py`:
